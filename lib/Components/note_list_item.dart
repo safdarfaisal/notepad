@@ -13,12 +13,16 @@ class NoteListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        if (user.email == documentSnapshot.data()['user']) {
+        if (user.email == documentSnapshot.data()['user'] ||
+            documentSnapshot.data()['user'] == null) {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Notepad(updateCurrent: true, user: user),
-              ));
+                  builder: (context) => Notepad(
+                        updateCurrent: true,
+                        user: user,
+                        documentSnapshot: documentSnapshot,
+                      )));
         }
       },
       child: Container(
@@ -27,7 +31,9 @@ class NoteListItem extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              documentSnapshot.data()['textBody'],
+              documentSnapshot.data()['textBody'] == null
+                  ? 'Not available'
+                  : documentSnapshot.data()['textBody'],
               textAlign: TextAlign.left,
               style: TextStyle(
                 color: Colors.white,
@@ -38,7 +44,9 @@ class NoteListItem extends StatelessWidget {
               height: 10.0,
             ),
             Text(
-              documentSnapshot.data()['user'],
+              documentSnapshot.data()['user'] != null
+                  ? documentSnapshot.data()['user']
+                  : 'Not available',
               style: TextStyle(
                 color: Colors.white,
               ),

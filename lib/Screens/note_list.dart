@@ -24,13 +24,12 @@ class _NoteListState extends State<NoteList> {
   FirebaseFirestore _firestore;
   CollectionReference notes;
 
-  List<NoteListItem> NotesList = [];
+  List<NoteListItem> notesList = [];
 
   makeListItems() async {
     documentList.clear();
     return notes.get().then((qSnap) => qSnap.docs.forEach((docSnap) {
           documentList.add(docSnap);
-          setState(() {});
         }));
   }
 
@@ -41,32 +40,36 @@ class _NoteListState extends State<NoteList> {
               documentList.add(docSnap);
               setState(() {});
             }))
-        .then((value) => {
-              makeNoteList(),
-              setState(() {}),
-            });
+        .then((value) => {makeNoteList()});
   }
 
-  makeNoteList() {
+  Future<void> makeNoteList() async {
     isMaking = true;
-    NotesList.clear();
+    List<NoteListItem> tempList = [];
+    notesList.clear();
     for (var docSnap in documentList) {
       NoteListItem newItem = NoteListItem(
         documentSnapshot: docSnap,
         user: widget.user,
       );
-      NotesList.add(newItem);
+      tempList.add(newItem);
     }
-    setState(() {});
+    setState(() {
+      notesList = tempList;
+    });
     isMaking = false;
+  }
+
+  waitForData() {
+    documentSnaphot = makeNoteComplete();
+    setState(() {});
   }
 
   @override
   void initState() {
     _firestore = FirebaseFirestore.instance;
     notes = _firestore.collection('notes');
-    documentSnaphot = makeNoteComplete();
-    setState(() {});
+    waitForData();
     super.initState();
   }
 
@@ -82,9 +85,6 @@ class _NoteListState extends State<NoteList> {
                 IconButton(
                   icon: Icon(Icons.add),
                   onPressed: () {
-                    setState(() {
-                      NoteListItem.number++;
-                    });
                     print(widget.user);
                     Navigator.push(
                         context,
@@ -101,7 +101,7 @@ class _NoteListState extends State<NoteList> {
             body: ModalProgressHUD(
               inAsyncCall: isMaking,
               child: ListView(
-                children: NotesList,
+                children: notesList,
               ),
             ),
           );
