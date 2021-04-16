@@ -41,6 +41,7 @@ class _NotepadState extends State<Notepad> {
 
     if (widget.updateCurrent) {
       _controller.text = widget.documentSnapshot.data()['textBody'];
+      textBody = _controller.text;
     }
     super.initState();
   }
@@ -119,15 +120,30 @@ class _NotepadState extends State<Notepad> {
                 })
           ],
         ),
-        body: TextField(
-          controller: _controller,
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          onChanged: (value) {
-            setState(() {
-              textBody = value;
-            });
-          },
+        body: SingleChildScrollView(
+          child: TextField(
+            style: TextStyle(
+              color: Colors.black,
+            ),
+            autofocus: true,
+            autocorrect: true,
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+            ),
+            controller: _controller,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            onChanged: (value) {
+              setState(() {
+                textBody = value;
+              });
+            },
+          ),
         ));
   }
 }

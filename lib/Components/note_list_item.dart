@@ -21,7 +21,10 @@ class NoteListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        primary: Colors.white,
+      ),
       onPressed: () {
         if (user.email == documentSnapshot.data()['user'] ||
             documentSnapshot.data()['user'] == null) {
@@ -37,21 +40,18 @@ class NoteListItem extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        decoration: BoxDecoration(border: Border.all(color: Colors.white)),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               documentSnapshot.data()['textBody'] == null
                   ? 'Not available'
                   : documentSnapshot.data()['textBody'],
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.start,
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 20,
               ),
-            ),
-            SizedBox(
-              height: 10.0,
             ),
           ],
         ),
