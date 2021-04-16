@@ -52,7 +52,9 @@ class _NoteListState extends State<NoteList> {
         documentSnapshot: docSnap,
         user: widget.user,
       );
-      tempList.add(newItem);
+      if (newItem.shouldDisplay()) {
+        tempList.add(newItem);
+      }
     }
     setState(() {
       notesList = tempList;

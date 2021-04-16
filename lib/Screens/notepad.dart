@@ -106,11 +106,23 @@ class _NotepadState extends State<Notepad> {
                         });
                   }
                 }),
-            IconButton(icon: Icon(Icons.delete_forever), onPressed: () {})
+            IconButton(
+                icon: Icon(Icons.delete_forever),
+                onPressed: () {
+                  notes.doc(widget.documentSnapshot.reference.id).delete();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NoteList(
+                                user: widget.user,
+                              )));
+                })
           ],
         ),
         body: TextField(
           controller: _controller,
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
           onChanged: (value) {
             setState(() {
               textBody = value;

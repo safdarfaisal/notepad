@@ -9,6 +9,16 @@ class NoteListItem extends StatelessWidget {
   final DocumentSnapshot documentSnapshot;
 
   NoteListItem({this.documentSnapshot, this.user});
+
+  bool shouldDisplay() {
+    if (user.email == documentSnapshot.data()['user'] ||
+        documentSnapshot.data()['user'] == null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -42,14 +52,6 @@ class NoteListItem extends StatelessWidget {
             ),
             SizedBox(
               height: 10.0,
-            ),
-            Text(
-              documentSnapshot.data()['user'] != null
-                  ? documentSnapshot.data()['user']
-                  : 'Not available',
-              style: TextStyle(
-                color: Colors.white,
-              ),
             ),
           ],
         ),
