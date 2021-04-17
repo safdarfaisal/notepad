@@ -98,12 +98,12 @@ class _NotepadState extends State<Notepad> {
                       "user": widget.user.email
                     }).then((docRef) => {
                           print('User'),
-                          Navigator.push(
-                              context,
+                          Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
                                   builder: (context) => NoteList(
                                         user: widget.user,
-                                      )))
+                                      )),
+                              (Route<dynamic> route) => false)
                         });
                   }
                 }),
@@ -111,12 +111,12 @@ class _NotepadState extends State<Notepad> {
                 icon: Icon(Icons.delete_forever),
                 onPressed: () {
                   notes.doc(widget.documentSnapshot.reference.id).delete();
-                  Navigator.push(
-                      context,
+                  Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (context) => NoteList(
                                 user: widget.user,
-                              )));
+                              )),
+                      (Route<dynamic> route) => false);
                 })
           ],
         ),
