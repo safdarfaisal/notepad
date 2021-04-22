@@ -182,7 +182,7 @@ class Storage {
               userEmail: rec['useremail'],
               body: rec['body'],
               timestamp: rec['timestamp'],
-              isDeleted: rec['deleted'],
+              isDeleted: rec['deleted'] == 1 ? true : false,
             );
             //print(doc.key.toString() + " " + doc.body);
             ls.add(doc);

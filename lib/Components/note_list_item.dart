@@ -14,13 +14,17 @@ class NoteListItem extends StatelessWidget {
   NoteListItem({this.document, this.user});
 
   bool shouldDisplay() {
-    // if (user.email == documentSnapshot.data()['user'] ||
-    //     documentSnapshot.data()['user'] == null) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-    return (user.email == document.userEmail || document.userEmail == null);
+    if (user.email == document.userEmail || document.userEmail == null) {
+      if (document.isDeleted) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+    // return ((user.email == document.userEmail || document.userEmail == null) &&
+    //     !document.isDeleted);
   }
 
   @override

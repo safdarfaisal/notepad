@@ -10,6 +10,7 @@ import 'package:notepad/Screens/login_screen.dart';
 import 'package:notepad/Screens/notepad.dart';
 import 'package:notepad/utilities/document.dart';
 import 'package:notepad/utilities/storage.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class NoteList extends StatefulWidget {
   static final String id = 'note_list';
@@ -55,7 +56,9 @@ class _NoteListState extends State<NoteList> {
   Future<void> makeNoteList() async {
     print("makeNoteList");
     isMaking = true;
+
     notesList.clear();
+    print(notesList);
     List<NoteListItem> tempList = [];
     tempList.clear();
     for (var doc in documentList) {
@@ -63,11 +66,15 @@ class _NoteListState extends State<NoteList> {
         document: doc,
         user: widget.user,
       );
-      if (newItem.shouldDisplay()) {
+
+      if (newItem.shouldDisplay() && !newItem.document.isDeleted) {
         tempList.add(newItem);
       }
     }
-    notesList = tempList;
+    print(tempList);
+    setState(() {
+      notesList = tempList;
+    });
     isMaking = false;
   }
 
@@ -82,19 +89,37 @@ class _NoteListState extends State<NoteList> {
   waitForfullSync() {
     notesList.clear();
     notes.syncAllDocuments(widget.user.email).then((value) {
-      setState(() {});
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NoteList(
+                    user: widget.user,
+                  )),
+          (route) => false);
     });
   }
 
   waitfortimestampsync() {
     notes.syncWithTimeStamp(widget.user.email).then((value) {
-      setState(() {});
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NoteList(
+                    user: widget.user,
+                  )),
+          (route) => false);
     });
   }
 
   waitForCleaningDatabase() {
     notes.clearDatabase(widget.user.email).then((value) {
-      setState(() {});
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NoteList(
+                    user: widget.user,
+                  )),
+          (route) => false);
     });
   }
 
@@ -132,45 +157,16 @@ class _NoteListState extends State<NoteList> {
             color: Colors.amber,
           );
         }
+        if (snapshot.hasError) {
+          return Container(
+            color: Colors.red,
+          );
+        }
 
         if (snapshot.hasData) {
           return Scaffold(
             appBar: AppBar(
               title: Text('List of Notes'),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    print(widget.user);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Notepad(
-                          updateCurrent: false,
-                          user: widget.user,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.sync),
-                  onPressed: () {
-                    waitForfullSync();
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.refresh),
-                  onPressed: () {
-                    waitfortimestampsync();
-                  },
-                ),
-                IconButton(
-                    icon: Icon(Icons.logout),
-                    onPressed: () {
-                      waitForLogOut();
-                    })
-              ],
             ),
             body: ModalProgressHUD(
               inAsyncCall: isMaking,
@@ -178,11 +174,93 @@ class _NoteListState extends State<NoteList> {
                 children: notesList,
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              child: Icon(Icons.delete_forever),
-              onPressed: () {
-                waitForCleaningDatabase();
-              },
+            // floatingActionButton: FloatingActionButton(
+            //   child: Icon(Icons.add),
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => Notepad(
+            //           updateCurrent: false,
+            //           user: widget.user,
+            //         ),
+            //       ),
+            //     );
+            //   },
+            // ),
+            floatingActionButton: SpeedDial(
+              marginEnd: 18,
+              marginBottom: 20,
+              animatedIcon: AnimatedIcons.arrow_menu,
+              buttonSize: 56.0,
+              activeBackgroundColor: Colors.amber,
+              visible: true,
+              renderOverlay: false,
+              curve: Curves.bounceIn,
+              overlayColor: Colors.black,
+              overlayOpacity: 0.5,
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              elevation: 8.0,
+              shape: CircleBorder(),
+              children: [
+                SpeedDialChild(
+                    child: Icon(
+                      Icons.add,
+                    ),
+                    backgroundColor: Colors.amber,
+                    label: 'Add New Note',
+                    labelStyle: TextStyle(fontSize: 18.0),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Notepad(
+                            updateCurrent: false,
+                            user: widget.user,
+                          ),
+                        ),
+                      );
+                    }),
+                SpeedDialChild(
+                  child: Icon(
+                    Icons.refresh,
+                  ),
+                  backgroundColor: Colors.amber,
+                  label: 'Basic Refresh',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  onTap: () {
+                    waitfortimestampsync();
+                  },
+                ),
+                SpeedDialChild(
+                  child: Icon(
+                    Icons.sync,
+                  ),
+                  backgroundColor: Colors.amber,
+                  label: 'full sync to cloud',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  onTap: () => waitForfullSync(),
+                ),
+                SpeedDialChild(
+                  child: Icon(
+                    Icons.clear_all,
+                  ),
+                  backgroundColor: Colors.amber,
+                  label: 'Clear all notes',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  onTap: () => waitForCleaningDatabase(),
+                ),
+                SpeedDialChild(
+                  child: Icon(
+                    Icons.logout,
+                  ),
+                  backgroundColor: Colors.amber,
+                  label: 'Log Out',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  onTap: () => waitForLogOut(),
+                ),
+              ],
             ),
           );
         }

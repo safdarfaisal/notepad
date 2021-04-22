@@ -21,4 +21,8 @@ class Document {
       'deleted': isDeleted,
     };
   }
+
+  changeIsDeleted() {
+    isDeleted = !isDeleted;
+  }
 }
